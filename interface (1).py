@@ -116,7 +116,7 @@ class fitnessTracker:
         print("Your profile is currently set to the following:",self.profileTab.get())
  
     def add_workout_row(self):
-        """Add a new row with an entry and a filtered dropdown."""
+        """Add a new row for workout name"""
         # Create a frame for the row
         row_frame = tkinter.Frame(self.dynamic_frame)
         row_frame.grid(row=self.row_counter, column=0, sticky='we', pady=5)
@@ -144,11 +144,23 @@ class fitnessTracker:
             # Attach filtering logic to the dropdown's text variable
         dropdown_var.trace_add("write", on_dropdown_type)
 
-        setLabel = tkinter.Label(row_frame,text="sets")
-        setLabel.pack(side='left', padx=5)
-        sets = [1,2,3,4,5,6,7,8,9,10]
-        setscb = ttk.Combobox(row_frame, values=sets)
-        setscb.pack(side='left', padx=5)
+        if self.row_counter == 0:
+            self.add_button = tkinter.Button(self.createLogTab, text="Add set", command=self.add_set_row)
+            self.add_button.pack(pady=10)
+        # Keep track of rows
+        self.row_counter += 1
+
+    def add_set_row(self):
+        """Add a new row for a new sets with reps and weights."""
+        # Create a frame for the row
+        row_frame = tkinter.Frame(self.dynamic_frame)
+        row_frame.grid(row=self.row_counter, column=0, sticky='we', pady=5)
+
+        # setLabel = tkinter.Label(row_frame,text="sets")
+        # setLabel.pack(side='left', padx=5)
+        # sets = [1,2,3,4,5,6,7,8,9,10]
+        # setscb = ttk.Combobox(row_frame, values=sets)
+        # setscb.pack(side='left', padx=5)
 
         repLabel = tkinter.Label(row_frame,text="reps")
         repLabel.pack(side='left', padx=5)
@@ -163,7 +175,6 @@ class fitnessTracker:
         weightcb.pack(side='left', padx=5)
 
         # Keep track of rows
-        self.rows.append((dropdown,))
         self.row_counter += 1
 
 
