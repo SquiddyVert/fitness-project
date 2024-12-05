@@ -1,6 +1,7 @@
 import tkinter
 from tkinter import ttk
 from workout2 import Workout
+from workoutNames import workoutNames
 
 class fitnessTracker:
     def __init__(self, root):
@@ -85,35 +86,16 @@ class fitnessTracker:
         self.createLogTab = tkinter.Frame(self.my_notebook)
         self.my_notebook.add(self.createLogTab, text= "log workouts")
 
-        nameLabel = tkinter.Label(self.createLogTab,text="workout name")
-        nameLabel.pack()
-        self.nameEntry = tkinter.Entry(self.createLogTab,width=30)
-        self.nameEntry.pack()
+        self.dynamic_frame = tkinter.Frame(self.createLogTab)
+        self.dynamic_frame.pack(fill='x', padx=10, pady=10)
 
-        setLabel = tkinter.Label(self.createLogTab,text="sets")
-        setLabel.pack()
-        sets = [1,2,3,4,5,6,7,8,9,10]
-        setscb = ttk.Combobox(self.createLogTab, values=sets)
-        setscb.pack()
+        self.add_button = tkinter.Button(self.createLogTab, text="Add Workout", command=self.add_workout_row)
+        self.add_button.pack(pady=10)
 
-        repLabel = tkinter.Label(self.createLogTab,text="reps")
-        repLabel.pack()
-        reps = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-        repscb = ttk.Combobox(self.createLogTab, values=reps)
-        repscb.pack()
+        self.dropdown_options = workoutNames()
 
-        weightLabel = tkinter.Label(self.createLogTab,text="weights(0 if none)")
-        weightLabel.pack()
-        weights = [0, 5, 7.5, 10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 27.5, 30.0, 32.5, 35.0, 37.5, 40.0, 42.5, 45.0, 47.5, 50.0, 52.5, 55.0, 57.5, 60.0, 62.5, 65.0, 67.5, 70.0, 72.5, 75.0, 77.5, 80.0]
-        weightcb = ttk.Combobox(self.createLogTab, values=weights)
-        weightcb.pack()
-
-        saveButton = tkinter.Button(self.createLogTab, text="Select Fruit", command=self.outputWorkout)
-        saveButton.pack()
-
-        homeButton = tkinter.Button(self.createLogTab, text="Home", command=lambda: self.my_notebook.select(0))
-        homeButton.pack(side=tkinter.BOTTOM, pady=5)
-
+        self.row_counter = 0
+        self.rows = []
 
     def viewLog_Tab(self):
         self.viewLogTab = tkinter.Frame(self.my_notebook)
@@ -132,7 +114,57 @@ class fitnessTracker:
 
     def outputprofile(self):
         print("Your profile is currently set to the following:",self.profileTab.get())
+ 
+    def add_workout_row(self):
+        """Add a new row with an entry and a filtered dropdown."""
+        # Create a frame for the row
+        row_frame = tkinter.Frame(self.dynamic_frame)
+        row_frame.grid(row=self.row_counter, column=0, sticky='we', pady=5)
 
+        self.nameLabel = tkinter.Label(row_frame,text="workout name")
+        self.nameLabel.pack(side='left', padx=5)
+
+        # Create a dropdown (Combobox)
+        dropdown_var = tkinter.StringVar()
+        dropdown = ttk.Combobox(row_frame, textvariable=dropdown_var, width=20, state="normal")
+        dropdown.pack(side='left', padx=5)
+        dropdown['values'] = self.dropdown_options  # Populate with all options initially
+
+        def on_dropdown_type(*args):
+            current_text = dropdown_var.get()
+            filtered_options = [
+                option for option in self.dropdown_options if current_text.lower() in option.lower()
+            ]
+            dropdown['values'] = filtered_options
+
+            # Keep the current text in the dropdown
+            if current_text not in filtered_options:
+                dropdown_var.set(current_text)
+
+            # Attach filtering logic to the dropdown's text variable
+        dropdown_var.trace_add("write", on_dropdown_type)
+
+        setLabel = tkinter.Label(row_frame,text="sets")
+        setLabel.pack(side='left', padx=5)
+        sets = [1,2,3,4,5,6,7,8,9,10]
+        setscb = ttk.Combobox(row_frame, values=sets)
+        setscb.pack(side='left', padx=5)
+
+        repLabel = tkinter.Label(row_frame,text="reps")
+        repLabel.pack(side='left', padx=5)
+        reps = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+        repscb = ttk.Combobox(row_frame, values=reps)
+        repscb.pack(side='left', padx=5)
+
+        weightLabel = tkinter.Label(row_frame,text="weights(0 if none)")
+        weightLabel.pack(side='left', padx=5)
+        weights = [0, 5, 7.5, 10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 27.5, 30.0, 32.5, 35.0, 37.5, 40.0, 42.5, 45.0, 47.5, 50.0, 52.5, 55.0, 57.5, 60.0, 62.5, 65.0, 67.5, 70.0, 72.5, 75.0, 77.5, 80.0]
+        weightcb = ttk.Combobox(row_frame, values=weights)
+        weightcb.pack(side='left', padx=5)
+
+        # Keep track of rows
+        self.rows.append((dropdown,))
+        self.row_counter += 1
 
 
 if __name__ == "__main__":
