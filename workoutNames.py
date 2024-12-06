@@ -1,3 +1,32 @@
+# Authors: Samuel Franco and Dekang Lu
+from profile_1 import Profile
+
+
+def getBMI(height, weight):
+    '''calculates bmi based off user input height and weight
+    :height p1: height of user
+    :weight p2: weight of user
+    :return: BMI'''
+    BMI = (weight * 703) / (height ** 2)
+    return BMI
+
+def bmiLevel(BMI):
+    '''function calculates what category of bmi the user is
+    :BMI p1: the bmi of the user
+    :return: a message saying what level of bmi the user is'''
+    match BMI:
+        case n if n < 18.5:
+            print(f"According to the World Health Organization(WHO),your BMI level of {BMI} means you are classified as Underweight")
+        case n if 18.5 <= n < 24.9:
+            print(f"According to the World Health Organization(WHO),your BMI level of {BMI} means you are classified as Normal weight")
+        case n if 25 <= n < 29.9:
+            print(f"According to the World Health Organization(WHO),your BMI level of {BMI} means you are classified as Overweight")
+        case n if n > 25:
+            print(f"According to the World Health Organization(WHO),your BMI level of {BMI} means you are classified as Obese")
+    
+
+
+
 def workoutNames():
     return ['Neck Flexion', 'Lateral Neck Flexion', 'Wall Front Neck Bridge',
        'Wall Side Neck Bridge', 'Neck Extension', 'Seated Neck Extension',
