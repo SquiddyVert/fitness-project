@@ -96,6 +96,8 @@ class fitnessTracker:
 
         self.row_counter = 0
         self.rows = []
+        self.workouts = []
+
 
     def viewLog_Tab(self):
         self.viewLogTab = tkinter.Frame(self.my_notebook)
@@ -118,17 +120,17 @@ class fitnessTracker:
     def add_workout_row(self):
         """Add a new row for workout name"""
         # Create a frame for the row
-        row_frame = tkinter.Frame(self.dynamic_frame)
-        row_frame.grid(row=self.row_counter, column=0, sticky='we', pady=5)
+        workout_frame = tkinter.Frame(self.dynamic_frame, bd=2, relief='groove')
+        workout_frame.pack(fill='x', pady=5)
 
-        self.nameLabel = tkinter.Label(row_frame,text="workout name")
+        self.nameLabel = tkinter.Label(workout_frame,text="workout name")
         self.nameLabel.pack(side='left', padx=5)
 
         # Create a dropdown (Combobox)
         dropdown_var = tkinter.StringVar()
-        dropdown = ttk.Combobox(row_frame, textvariable=dropdown_var, width=20, state="normal")
+        dropdown = ttk.Combobox(workout_frame, textvariable=dropdown_var, width=20, state="normal")
         dropdown.pack(side='left', padx=5)
-        dropdown['values'] = self.dropdown_options  # Populate with all options initially
+        dropdown['values'] = self.dropdown_options  
 
         def on_dropdown_type(*args):
             current_text = dropdown_var.get()
@@ -144,38 +146,68 @@ class fitnessTracker:
             # Attach filtering logic to the dropdown's text variable
         dropdown_var.trace_add("write", on_dropdown_type)
 
-        if self.row_counter == 0:
-            self.add_button = tkinter.Button(self.createLogTab, text="Add set", command=self.add_set_row)
-            self.add_button.pack(pady=10)
-        # Keep track of rows
-        self.row_counter += 1
+        add_set_button = tkinter.Button(workout_frame, text="Add Set", command=lambda: self.add_set_row(workout_frame))
+        add_set_button.pack(side='left', padx=5)
 
-    def add_set_row(self):
+        delete_workout_button = tkinter.Button(
+            workout_frame,
+            text="Delete Workout",
+            command=lambda: self.delete_workout_row(workout_frame)
+        )
+        delete_workout_button.pack(side='left', padx=5)
+        self.workouts.append({"frame": workout_frame, "sets": []})
+
+    def add_set_row(self, workout_frame):
         """Add a new row for a new sets with reps and weights."""
-        # Create a frame for the row
-        row_frame = tkinter.Frame(self.dynamic_frame)
-        row_frame.grid(row=self.row_counter, column=0, sticky='we', pady=5)
+        for workout in self.workouts:
+            if workout["frame"] == workout_frame:
+                set_frame = tkinter.Frame(workout_frame)
+                set_frame.pack(fill='x', padx=20, pady=2)
 
-        # setLabel = tkinter.Label(row_frame,text="sets")
-        # setLabel.pack(side='left', padx=5)
-        # sets = [1,2,3,4,5,6,7,8,9,10]
-        # setscb = ttk.Combobox(row_frame, values=sets)
-        # setscb.pack(side='left', padx=5)
+                repLabel = tkinter.Label(set_frame,text="reps")
+                repLabel.pack(side='left', padx=5)
+                reps = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+                repscb = ttk.Combobox(set_frame, values=reps)
+                repscb.pack(side='left', padx=5)
+        
+                weightLabel = tkinter.Label(set_frame,text="weights(0  none)")
+                weightLabel.pack(side='left', padx=5)
+                weights = [0, 5, 7.5, 10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 27.5, 30.0, 32.5, 35.0, 37.5, 40.0, 42.5, 45.0, 47.5, 50.0, 52.5, 55.0, 57.5, 60.0, 62.5, 65.0, 67.5, 70.0, 72.5, 75.0, 77.5, 80.0]
+                weightcb = ttk.Combobox(set_frame, values=weights)
+                weightcb.pack(side='left', padx=5)
+        
+                delete_set_button = tkinter.Button(
+                    set_frame,
+                    text="Delete Set",
+                    command=lambda: self.delete_set_row(workout, set_frame)
+                )
+                delete_set_button.pack(side='left', padx=5)
+                workout["sets"].append(set_frame)
+                break
 
-        repLabel = tkinter.Label(row_frame,text="reps")
-        repLabel.pack(side='left', padx=5)
-        reps = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-        repscb = ttk.Combobox(row_frame, values=reps)
-        repscb.pack(side='left', padx=5)
+    def delete_workout_row(self, workout_frame):
+        """Delete a workout row and all its associated sets."""
+        for workout in self.workouts:
+            if workout["frame"] == workout_frame:
+                # Remove all set frames
+                for set_frame in workout["sets"]:
+                    set_frame.destroy()
 
-        weightLabel = tkinter.Label(row_frame,text="weights(0 if none)")
-        weightLabel.pack(side='left', padx=5)
-        weights = [0, 5, 7.5, 10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 27.5, 30.0, 32.5, 35.0, 37.5, 40.0, 42.5, 45.0, 47.5, 50.0, 52.5, 55.0, 57.5, 60.0, 62.5, 65.0, 67.5, 70.0, 72.5, 75.0, 77.5, 80.0]
-        weightcb = ttk.Combobox(row_frame, values=weights)
-        weightcb.pack(side='left', padx=5)
+                # Remove the workout frame
+                workout_frame.destroy()
 
-        # Keep track of rows
-        self.row_counter += 1
+                # Remove from tracking list
+                self.workouts.remove(workout)
+                break
+
+    def delete_set_row(self, workout, set_frame):
+        """Delete a specific set row."""
+        # Remove the set frame from the workout's tracking list
+        if set_frame in workout["sets"]:
+            workout["sets"].remove(set_frame)
+
+        # Destroy the set frame
+        set_frame.destroy()
 
 
 if __name__ == "__main__":
