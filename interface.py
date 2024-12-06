@@ -25,6 +25,8 @@ class GUI:
         self.createLog_Tab()
         self.viewLog_Tab()
 
+        self.data = []
+
     #creates the home tab of the application
     def home_Tab(self):
         self.home_tab = tkinter.Frame(self.my_notebook)
@@ -99,6 +101,9 @@ class GUI:
 
         self.dropdown_options = func.workoutNames()
 
+        save_button = tkinter.Button(self.createLogTab, text="Save", command=self.save_data)
+        save_button.pack(side='bottom', padx=5)
+
         self.row_counter = 0
         self.rows = []
         self.workouts = []
@@ -108,9 +113,13 @@ class GUI:
         self.viewLogTab = tkinter.Frame(self.my_notebook)
         self.my_notebook.add(self.viewLogTab, text= "View Logs")
 
+        self.tree = ttk.Treeview(self.viewLogTab, columns=("Workout", "rep", "weight"), show="headings")
+        self.tree.heading("Workout", text="Workout")
+        self.tree.heading("rep", text="rep")
+        self.tree.heading("weight", text="weight")
+        self.tree.pack(fill="both", expand=True)
+
         homeButton = tkinter.Button(self.viewLogTab, text="Home", command=lambda: self.my_notebook.select(0))
         homeButton.pack(side=tkinter.BOTTOM, pady=5)
 
-
-        return
      
