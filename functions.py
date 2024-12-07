@@ -5,32 +5,37 @@ from tkinter import messagebox
 from profile_1 import Profile
 from interface import GUI
 
-
-def getBMI(height, weight):
+def getBMI(GUI, name):
     '''calculates bmi based off user input height and weight
     :height p1: height of user
     :weight p2: weight of user
     :return: BMI'''
+    if name in GUI.profiles:
+        profile = GUI.profiles[name] 
+        height = int(profile["Height"]  )  
+        weight = int(profile["Weight"] ) 
     try:
         BMI = (weight * 703) / (height ** 2)
         return BMI
     except ZeroDivisionError:
         return "Height cannot be zero."
 
-def bmiLevel(BMI):
+def bmiLevel(GUI,BMI):
     '''function calculates what category of bmi the user is
     :BMI p1: the bmi of the user
     :return: a message saying what level of bmi the user is'''
     match BMI:
         case n if n < 18.5:
-            return "According to the World Health Organization(WHO),your BMI level of", {BMI}, "means you are classified as Underweight"
+            bmilevelMessage = "According to the World Health Organization(WHO), \n your BMI level of", BMI, "means you are classified as Underweight"
         case n if 18.5 <= n < 24.9:
-             return "According to the World Health Organization(WHO),your BMI level of", {BMI}, "means you are classified as Normal weight"
+            bmilevelMessage = "According to the World Health Organization(WHO), \n your BMI level of", BMI, "means you are classified as Normal weight"
         case n if 25 <= n < 29.9:
-             return "According to the World Health Organization(WHO),your BMI level of", {BMI}, "means you are classified as  Overweight"
+            bmilevelMessage = "According to the World Health Organization(WHO), \n your BMI level of", BMI, "means you are classified as  Overweight"
         case n if n > 25:
-             return "According to the World Health Organization(WHO),your BMI level of", {BMI}, "means you are classified as  Obese"
+            bmilevelMessage = "According to the World Health Organization(WHO), \n your BMI level of", BMI, "means you are classified as  Obese"
     
+    bmilevelLabel = tkinter.Label(GUI.profileTab,text= bmilevelMessage)
+    bmilevelLabel.pack(side ="top", anchor= "center")
    
 def outputWorkout(GUI):
     name = GUI.nameEntry.get()
@@ -49,30 +54,33 @@ def saveProfile(GUI):
         gender = "Female"
     
     #creates a dictionary so when it is output, the format is easier to read
-    profile = {
-            "Name": name,
+    GUI.profiles[name] = {
             "Age": age,
             "Height": height,
             "Weight": weight,
             "Gender": gender,
         }
     
-    #Adds profile to main profile list
-    GUI.profiles.append(profile)
-
     #Notifies user that the profile has been saved
     tkinter.messagebox.showinfo("Alert","Profile has been saved!")
+
+    #clears all the information that was in the profile entries
+    GUI.nameEntry.delete(0, tkinter.END)
+    GUI.ageEntry.delete(0, tkinter.END)
+    GUI.heightEntry.delete(0, tkinter.END)
+    GUI.weightEntry.delete(0, tkinter.END)
+    GUI.gender.set(0)
 
 
 
 def outputProfile(GUI):
      #check whether or not htere are any profiles
-    if  GUI.profiles == []:
+    if  GUI.profiles == {}:
         tkinter.messagebox.showinfo("Profiles", "There are no profiles to display. Add your profile to see it displayed here!")
         return
     
-    #turns the list into a string making it so every profile is a string of its own on a new line 
-    profilesMessage = "\n".join([str(profile) for profile in GUI.profiles])
+    #turns the dictionary into a string making it so every profile is a string of its own on a new line 
+    profilesMessage = "\n".join([ f"{name}: {info}" for name, info in GUI.profiles.items()])
     tkinter.messagebox.showinfo(f"Profiles",f"All Saved Profiles: \n {profilesMessage}")    #outputs the saved profiles as an alert box
 
 def add_workout_row(GUI):
@@ -184,6 +192,7 @@ def delete_set_row(GUI, workout, set_frame):
 
     # Destroy the set frame
     set_frame.destroy()
+
 def reset_log_tab(GUI):
         """Clear the Log Tab and reset it to its initial state."""
         # Destroy all widgets in the dynamic frame
