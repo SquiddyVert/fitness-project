@@ -4,17 +4,17 @@ from tkinter import ttk
 from tkinter import messagebox
 from profile_1 import Profile
 from interface import GUI
+from workout import Workout
 from chatbot import find_most_similar_question
 
 def getBMI(GUI, name):
     '''calculates bmi based off user input height and weight
-    :height p1: height of user
-    :weight p2: weight of user
+    :name p1: profile name for who the bmiis being checked
     :return: BMI'''
     if name in GUI.profiles:
         profile = GUI.profiles[name] 
-        height = int(profile["Height"]  )  
-        weight = int(profile["Weight"] ) 
+        height = profile.getHeight() 
+        weight = profile.getWeight() 
     try:
         BMI = (weight * 703) / (height ** 2)
         return BMI
@@ -25,6 +25,10 @@ def bmiLevel(GUI,BMI):
     '''function calculates what category of bmi the user is
     :BMI p1: the bmi of the user
     :return: a message saying what level of bmi the user is'''
+    #if the label exissts already, it will be deleted before creating it again
+    if hasattr(GUI, 'bmilevelLabel') and GUI.bmilevelLabel.winfo_exists():
+        GUI.bmilevelLabel.destroy() 
+
     match BMI:
         case n if n < 18.5:
             bmilevelMessage = "According to the World Health Organization(WHO), \n your BMI level of", BMI, "means you are classified as Underweight"
@@ -36,31 +40,22 @@ def bmiLevel(GUI,BMI):
             bmilevelMessage = "According to the World Health Organization(WHO), \n your BMI level of", BMI, "means you are classified as  Obese"
     
     bmilevelLabel = tkinter.Label(GUI.profileTab,text= bmilevelMessage)
-    bmilevelLabel.pack(side ="top", anchor= "center")
-   
-def outputWorkout(GUI):
-    name = GUI.nameEntry.get()
-    return name
-
+    bmilevelLabel.grid(row=5, column=1)
 
 def saveProfile(GUI):
     #Grabs all the profile information
     name = GUI.nameEntry.get()
-    age = GUI.ageEntry.get()
-    height = GUI.heightEntry.get()
-    weight = GUI.weightEntry.get()
+    age = int(GUI.ageEntry.get())
+    height = float(GUI.heightEntry.get())
+    weight = float(GUI.weightEntry.get())
     if GUI.gender.get() == 0:
         gender = "Male" 
     else:
         gender = "Female"
     
-    #creates a dictionary so when it is output, the format is easier to read
-    GUI.profiles[name] = {
-            "Age": age,
-            "Height": height,
-            "Weight": weight,
-            "Gender": gender,
-        }
+    #creates an instance of profile class and saves to a dictionary
+    profile = Profile(name, gender, age, height, weight)
+    GUI.profiles[name] = profile
     
     #Notifies user that the profile has been saved
     tkinter.messagebox.showinfo("Alert","Profile has been saved!")
@@ -72,30 +67,47 @@ def saveProfile(GUI):
     GUI.weightEntry.delete(0, tkinter.END)
     GUI.gender.set(0)
 
-
-
 def outputProfile(GUI):
      #check whether or not htere are any profiles
     if  GUI.profiles == {}:
         tkinter.messagebox.showinfo("Profiles", "There are no profiles to display. Add your profile to see it displayed here!")
         return
     
-    #turns the dictionary into a string making it so every profile is a string of its own on a new line 
-    profilesMessage = "\n".join([ f"{name}: {info}" for name, info in GUI.profiles.items()])
+    #turns into a string making it so every profile is a string of its own on a new line
+    profilesMessage = "\n\n".join([
+        f"Name: {profile.getName()}\n"
+        f"Gender: {profile.getSex()}\n"
+        f"Age: {profile.getAge()}\n"
+        f"Height: {profile.getHeight()} in\n"
+        f"Weight: {profile.getWeight()} lbs"
+        for profile in GUI.profiles.values()
+    ])
+     
     tkinter.messagebox.showinfo(f"Profiles",f"All Saved Profiles: \n {profilesMessage}")    #outputs the saved profiles as an alert box
 
-def add_workout_row(GUI):
+def setProfile(GUI):
+    #creates a variable for whatever name is currently in the text box
+    updatedcurrentProfile = GUI.currentProfileEntry.get()
+
+    # Check if the profile exists in the profiles dictionary, if so updates the currentprofile label and variable accordingly
+    if updatedcurrentProfile in GUI.profiles:
+        GUI.currentProfile = updatedcurrentProfile 
+        GUI.currentuserprofileLabel.config(text=f"{GUI.currentProfile}")
+    else:
+        tkinter.messagebox.showinfo("Error", "Profile not found! Check 'output profiles' to see what profiles are availableto choose from")
+
+def add_excercise_row(GUI):
     """Add a new row for excercise name"""
     # Create a frame for the row
-    workout_frame = tkinter.Frame(GUI.dynamic_frame, bd=2, relief='groove')
-    workout_frame.pack(fill='x', pady=5)
+    excercise_frame = tkinter.Frame(GUI.dynamic_frame, bd=2, relief='groove')
+    excercise_frame.pack(fill='x', pady=5)
 
-    nameLabel = tkinter.Label(workout_frame,text="Excercise name")
+    nameLabel = tkinter.Label(excercise_frame,text="Excercise name")
     nameLabel.pack(side='left', padx=5)
 
     # Create a dropdown (Combobox)
     dropdown_var = tkinter.StringVar()
-    dropdown = ttk.Combobox(workout_frame, textvariable=dropdown_var, width=20, state="normal")
+    dropdown = ttk.Combobox(excercise_frame, textvariable=dropdown_var, width=20, state="normal")
     dropdown.pack(side='left', padx=5)
     dropdown['values'] = GUI.dropdown_options  
 
@@ -113,22 +125,22 @@ def add_workout_row(GUI):
         # Attach filtering logic to the dropdown's text variable
     dropdown_var.trace_add("write", on_dropdown_type)
 
-    add_set_button = tkinter.Button(workout_frame, text="Add Set", command=lambda: add_set_row(GUI,workout_frame))
+    add_set_button = tkinter.Button(excercise_frame, text="Add Set", command=lambda: add_set_row(GUI,excercise_frame))
     add_set_button.pack(side='left', padx=5)
 
-    delete_workout_button = tkinter.Button(
-        workout_frame,
+    delete_excercise_button = tkinter.Button(
+        excercise_frame,
         text="Delete Excercise",
-        command=lambda: delete_workout_row(GUI, workout_frame)
+        command=lambda: delete_workout_row(GUI, excercise_frame)
     )
-    delete_workout_button.pack(side='left', padx=5)
-    GUI.workouts.append({"frame": workout_frame, "name": dropdown_var, "sets": []})
+    delete_excercise_button.pack(side='left', padx=5)
+    GUI.excercises.append({"frame": excercise_frame, "name": dropdown_var, "sets": []})
 
-def add_set_row(GUI, workout_frame):
+def add_set_row(GUI, excercise_frame):
     """Add a new row for a new sets with reps and weights."""
-    for workout in GUI.workouts:
-        if workout["frame"] == workout_frame:
-            set_frame = tkinter.Frame(workout_frame)
+    for excercise in GUI.excercises:
+        if excercise["frame"] == excercise_frame:
+            set_frame = tkinter.Frame(excercise_frame)
             set_frame.pack(fill='x', padx=20, pady=2)
 
             repLabel = tkinter.Label(set_frame,text="reps")
@@ -164,32 +176,32 @@ def add_set_row(GUI, workout_frame):
             delete_set_button = tkinter.Button(
                 set_frame,
                 text="Delete Set",
-                command=lambda: delete_set_row(GUI,workout, set_frame)
+                command=lambda: delete_set_row(GUI,excercise, set_frame)
             )
             delete_set_button.pack(side='left', padx=5)
-            workout["sets"].append({"frame": set_frame, "rep": rep_var, "weight": weight_var})
+            excercise["sets"].append({"frame": set_frame, "rep": rep_var, "weight": weight_var})
             break
 
-def delete_workout_row(GUI, workout_frame):
+def delete_workout_row(GUI, excercise_frame):
     """Delete a workout row and all its associated sets."""
-    for workout in GUI.workouts:
-        if workout["frame"] == workout_frame:
+    for excercise in GUI.excercises:
+        if excercise["frame"] == excercise_frame:
             # Remove all set frames
-            for set_frame in workout["sets"]:
+            for set_frame in excercise["sets"]:
                 set_frame.destroy()
 
             # Remove the workout frame
-            workout_frame.destroy()
+            excercise_frame.destroy()
 
             # Remove from tracking list
-            GUI.workouts.remove(workout)
+            GUI.excercises.remove(excercise)
             break
 
-def delete_set_row(GUI, workout, set_frame):
+def delete_set_row(GUI, excercise, set_frame):
     """Delete a specific set row."""
     # Remove the set frame from the workout's tracking list
-    if set_frame in workout["sets"]:
-        workout["sets"].remove(set_frame)
+    if set_frame in excercise["sets"]:
+        excercise["sets"].remove(set_frame)
 
     # Destroy the set frame
     set_frame.destroy()
@@ -200,23 +212,24 @@ def reset_log_tab(GUI):
         for widget in GUI.dynamic_frame.winfo_children():
             widget.destroy()
 
-        # Clear the workout tracker list
-        GUI.workouts.clear()
+        # Clear the excercise tracker list
+        GUI.excercises.clear()
     
 def save_data(GUI):
     """Save the current workouts and sets to the data list and display them in the table."""
-    for workout in GUI.workouts:
-        workout_name = workout["name"].get()
-        for set_data in workout["sets"]:
+    GUI.data.clear()  # Clear previous data
+    for excercise in GUI.excercises:
+        excercise_name = excercise["name"].get()
+        for set_data in excercise["sets"]:
             rep = set_data["rep"].get()
             weight = set_data["weight"].get()
-            GUI.data.append((workout_name, rep, weight))
+            GUI.data.append((excercise_name, rep, weight))
 
     # Update the table in the Table tab
     for row in GUI.tree.get_children():
         GUI.tree.delete(row)
-    for workout_name, rep, weight in GUI.data:
-        GUI.tree.insert("", "end", values=(workout_name, rep, weight))
+    for excercise_name, rep, weight in GUI.data:
+        GUI.tree.insert("", "end", values=(excercise_name, rep, weight))
     
     GUI.reset_log_tab()
     GUI.my_notebook.select(3)
@@ -235,12 +248,12 @@ def handle_user_input(GUI, entry, text_widget):
     text_widget.insert(tkinter.END, f"Q&A support: {response}\n\n")
     text_widget.see(tkinter.END)
 
-def workoutNames():
+def excerciseNames():
     return ['Neck Flexion', 'Lateral Neck Flexion', 'Wall Front Neck Bridge',
        'Wall Side Neck Bridge', 'Neck Extension', 'Seated Neck Extension',
        'Seated Neck Extension:  Harness', 'Neck Retraction',
        'Wall Rear Neck Bridge', 'Lying Neck Retraction', 'Front Raise',
-       'Military Press', 'Military Press:  Seated',
+       'Military Press', 'Military Press:  Seated'
        'Front Raise:  Alternating', 'Front Raise:  One Arm',
        'Shoulder Press', 'Shoulder Press:  Seated', 'Arnold Press',
        'Shoulder Press:  One Arm', 'Reclined Shoulder Press',
