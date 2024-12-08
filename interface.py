@@ -178,6 +178,20 @@ class GUI:
 
         suggestionLabel = tkinter.Label(self.suggestionsTab, text="Below you can ask questions relating to fitness and the fitness companion will answer them. ")
         suggestionLabel.pack()
-        
-        homeButton = tkinter.Button(self.suggestionsTab, text="Home", command=lambda: self.my_notebook.select(0))
+
+        text_widget = tkinter.Text(self.suggestionsTab, wrap=tkinter.WORD, height=20, width=50)
+        text_widget.pack(padx=10, pady=10)
+
+        # Add an Entry widget for user input
+        entry_frame = ttk.Frame(self.suggestionsTab)
+        entry_frame.pack(fill=tkinter.X, padx=10, pady=10)
+
+        entry = ttk.Entry(entry_frame)
+        entry.pack(side=tkinter.LEFT, fill=tkinter.X, expand=True, padx=(0, 10))
+        entry.focus()
+
+        send_button = ttk.Button(entry_frame, text="Send", command=lambda: self.handle_user_input(entry, text_widget))
+        send_button.pack(side=tkinter.RIGHT)
+
+        homeButton = tkinter.Button(self.suggestionsTab, text="Home", command=lambda: func.my_notebook.select(0))
         homeButton.pack(side=tkinter.BOTTOM, pady=5)
