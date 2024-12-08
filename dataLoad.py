@@ -13,6 +13,3 @@ def extract_qna(row):
 
 # Apply function to the dataframe
 qna_list = df.apply(extract_qna, axis=1).tolist()
-
-# Print the result
-print(qna_list)
