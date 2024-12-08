@@ -3,8 +3,8 @@ import tkinter
 #from tkinter import ttk
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from workout2 import Workout
-from functions import workoutNames
+from workout import Workout
+from functions import excerciseNames
 from profile_1 import Profile
 from interface import GUI
 
