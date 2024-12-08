@@ -1,6 +1,8 @@
 #authors: Samuel Franco & Dekang Lu
 import tkinter
-from tkinter import ttk
+#from tkinter import ttk
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
 from workout2 import Workout
 from functions import workoutNames
 from profile_1 import Profile
@@ -12,6 +14,6 @@ def main():
 
 
 if __name__ == "__main__":
-    root = tkinter.Tk()
+    root = ttk.Window(themename="solar")
     app = GUI(root)
     root.mainloop()
