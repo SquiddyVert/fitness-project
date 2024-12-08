@@ -4,6 +4,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from profile_1 import Profile
 from interface import GUI
+from chatbot import find_most_similar_question
 
 def getBMI(GUI, name):
     '''calculates bmi based off user input height and weight
@@ -204,7 +205,6 @@ def reset_log_tab(GUI):
     
 def save_data(GUI):
     """Save the current workouts and sets to the data list and display them in the table."""
-    GUI.data.clear()  # Clear previous data
     for workout in GUI.workouts:
         workout_name = workout["name"].get()
         for set_data in workout["sets"]:
@@ -221,6 +221,19 @@ def save_data(GUI):
     GUI.reset_log_tab()
     GUI.my_notebook.select(3)
 
+def handle_user_input(GUI, entry, text_widget):
+    user_input = entry.get()
+    entry.delete(0, tkinter.END)
+
+    # Process input and generate a response (example logic)
+    if user_input.lower() == 'bye':
+        text_widget.insert(tkinter.END, "Q&A support: Goodbye!\n")
+        return
+
+    response = find_most_similar_question(user_input)
+    text_widget.insert(tkinter.END, f"You: {user_input}\n")
+    text_widget.insert(tkinter.END, f"Q&A support: {response}\n\n")
+    text_widget.see(tkinter.END)
 
 def workoutNames():
     return ['Neck Flexion', 'Lateral Neck Flexion', 'Wall Front Neck Bridge',
