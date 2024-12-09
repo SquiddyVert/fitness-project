@@ -35,7 +35,7 @@ class GUI:
         self.viewLog_Tab()
         self.suggestions_Tab()
 
-        self.data = []
+        self.data = {}
 
     #creates the home tab of the application
     def home_Tab(self):
