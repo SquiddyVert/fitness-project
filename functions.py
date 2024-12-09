@@ -3,8 +3,9 @@ import tkinter
 from tkinter import ttk
 from tkinter import messagebox
 from profile_1 import Profile
-from interface import GUI
 from workout import Workout
+from excercise import Excercise
+from set import Set
 from chatbot import find_most_similar_question
 from set import Set
 from excercise import Excercise
@@ -112,7 +113,8 @@ def add_excercise_row(GUI):
     dropdown_var = tkinter.StringVar()
     dropdown = ttk.Combobox(excercise_frame, textvariable=dropdown_var, width=20, state="normal")
     dropdown.pack(side='left', padx=5)
-    dropdown['values'] = GUI.dropdown_options  
+    dropdown['values'] = GUI.dropdown_options 
+
 
     def on_dropdown_type(*args):
         current_text = dropdown_var.get()
@@ -128,86 +130,183 @@ def add_excercise_row(GUI):
         # Attach filtering logic to the dropdown's text variable
     dropdown_var.trace_add("write", on_dropdown_type)
 
-    add_set_button = tkinter.Button(excercise_frame, text="Add Set", command=lambda: add_set_row(GUI,excercise_frame))
+    def on_dropdown_select(event):
+        selectedOption = dropdown_var.get()
+        
+        #creates an instance of exercise and saves it to the workout instance
+        newExcercise = Excercise(name=selectedOption)
+        GUI.currentWorkout.addExcercise(newExcercise)
+
+        # the buttons are updated to be able to perform their actions 
+        add_set_button.config(state="normal", command=lambda: add_set_row(GUI, excercise_frame, newExcercise))
+        delete_excercise_button.config(command=lambda: delete_excercise_row(GUI, excercise_frame, newExcercise))
+
+
+    # creates a bind on the dropdown
+    dropdown.bind("<<ComboboxSelected>>",  on_dropdown_select)
+
+    #creates an add set button that allows user to add set to excercise
+    add_set_button = tkinter.Button(excercise_frame, text="Add Set", state= "disabled")
     add_set_button.pack(side='left', padx=5)
 
+    #creates a delete button for the excercise
     delete_excercise_button = tkinter.Button(
         excercise_frame,
         text="Delete Excercise",
-        command=lambda: delete_workout_row(GUI, excercise_frame)
+        command=lambda: delete_excercise_row(GUI, excercise_frame)
     )
     delete_excercise_button.pack(side='left', padx=5)
-    GUI.excercises.append({"frame": excercise_frame, "name": dropdown_var, "sets": []})
+   # GUI.excercises.append({"frame": excercise_frame, "name": dropdown_var, "sets": []})
 
-def add_set_row(GUI, excercise_frame):
+def add_set_row(GUI, excercise_frame, excercise):
     """Add a new row for a new sets with reps and weights."""
-    for excercise in GUI.excercises:
-        if excercise["frame"] == excercise_frame:
-            set_frame = tkinter.Frame(excercise_frame)
-            set_frame.pack(fill='x', padx=20, pady=2)
+    #creates a new set frame for each set
+    set_frame = tkinter.Frame(excercise_frame)
+    set_frame.pack(fill='x', padx=20, pady=2) 
 
-            repLabel = tkinter.Label(set_frame,text="reps")
-            repLabel.pack(side='left', padx=5)
-            rep_var = tkinter.IntVar()
-            reps = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-            repscb = ttk.Combobox(set_frame, values=reps)
-            repscb.pack(side='left', padx=5)
+    repsLabel = tkinter.Label(set_frame,text="Reps")
+    repsLabel.pack(side='left', padx=5)
+    repsEntry = ttk.Entry(set_frame,width=10)
+    repsEntry.pack(side='left', padx=5)
+    #creates labels and widgets for reps and weigweightht
+    weightLabel = tkinter.Label(set_frame,text="Weight (lbs)")
+    weightLabel.pack(side='left', padx=5)
+    weightEntry = ttk.Entry(set_frame, width=10)
+    weightEntry.pack(side='left', padx=5)
 
-            def update_reps_var(event):
-                try:
-                    rep_var.set(int(repscb.get()))
-                except ValueError:
-                    rep_var.set(0)
+    #creates a delete button for the set
+    delete_set_button = tkinter.Button(
+        set_frame,
+        text="Delete Set",
+        command=lambda: delete_set_row(GUI,set_frame, excercise)
+    )
+    delete_set_button.pack(side='right', padx=5)
 
-            repscb.bind("<<ComboboxSelected>>", update_reps_var)
+    #function to handle the set values because by default they are empty
+    def get_set_values(repsEntry, weightEntry):
+        """Retrieve the values from the entry widgets and validate them."""
+        try:
+            # Get the values from the entry fields
+            reps = repsEntry.get()
+            weight = weightEntry.get()
+
+            # Checks if the value is empty and sets it to a default value of 0 if it is
+            if not reps:
+                reps = 0
+            else:
+                reps = int(reps)
+
+            if not weight:
+                weight = 0.0
+            else:
+                weight = float(weight)
+
+            return reps, weight
+        except ValueError:
+            # In case of invalid input, set default values
+            return 0, 0.0
+
+    def setinputComplete(event):
+        # Get the set values from the entries
+        reps, weight = get_set_values(repsEntry, weightEntry)
+   
+
+        # Create a new Set instance
+        newSet = Set(reps=reps, weight=weight)
     
-            weightLabel = tkinter.Label(set_frame,text="weights(0  none)")
-            weightLabel.pack(side='left', padx=5)
-            weight_var = tkinter.DoubleVar()
-            weights = [0, 5, 7.5, 10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 27.5, 30.0, 32.5, 35.0, 37.5, 40.0, 42.5, 45.0, 47.5, 50.0, 52.5, 55.0, 57.5, 60.0, 62.5, 65.0, 67.5, 70.0, 72.5, 75.0, 77.5, 80.0]
-            weightcb = ttk.Combobox(set_frame, values=weights)
-            weightcb.pack(side='left', padx=5)
+        # Add the new set to the exercise
+        excercise.addSet(newSet)
+        delete_set_button.config(command=lambda: delete_excercise_row(GUI, excercise_frame, newSet))
 
-            def update_weight_var(event):
-                try:
-                    weight_var.set(float(weightcb.get()))
-                except ValueError:
-                    weight_var.set(0.0)
+    repsEntry.bind("<FocusOut>", setinputComplete)
+    weightEntry.bind("<FocusOut>", setinputComplete)
     
-            weightcb.bind("<<ComboboxSelected>>", update_weight_var)
+    # for excercise in GUI.excercises:
+    #     if excercise["frame"] == excercise_frame:
+    #         set_frame = tkinter.Frame(excercise_frame)
+    #         set_frame.pack(fill='x', padx=20, pady=2)
+
+    #         repLabel = tkinter.Label(set_frame,text="reps")
+    #         repLabel.pack(side='left', padx=5)
+    #         rep_var = tkinter.IntVar()
+    #         reps = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    #         repscb = ttk.Combobox(set_frame, values=reps)
+    #         repscb.pack(side='left', padx=5)
+
+    #         def update_reps_var(event):
+    #             try:
+    #                 rep_var.set(int(repscb.get()))
+    #             except ValueError:
+    #                 rep_var.set(0)
+
+    #         repscb.bind("<<ComboboxSelected>>", update_reps_var)
     
-            delete_set_button = tkinter.Button(
-                set_frame,
-                text="Delete Set",
-                command=lambda: delete_set_row(GUI,excercise, set_frame)
-            )
-            delete_set_button.pack(side='left', padx=5)
-            excercise["sets"].append({"frame": set_frame, "rep": rep_var, "weight": weight_var})
-            break
+    #         weightLabel = tkinter.Label(set_frame,text="weights(0  none)")
+    #         weightLabel.pack(side='left', padx=5)
+    #         weight_var = tkinter.DoubleVar()
+    #         weights = [0, 5, 7.5, 10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 27.5, 30.0, 32.5, 35.0, 37.5, 40.0, 42.5, 45.0, 47.5, 50.0, 52.5, 55.0, 57.5, 60.0, 62.5, 65.0, 67.5, 70.0, 72.5, 75.0, 77.5, 80.0]
+    #         weightcb = ttk.Combobox(set_frame, values=weights)
+    #         weightcb.pack(side='left', padx=5)
 
-def delete_workout_row(GUI, excercise_frame):
-    """Delete a workout row and all its associated sets."""
-    for excercise in GUI.excercises:
-        if excercise["frame"] == excercise_frame:
-            # Remove all set frames
-            for set_frame in excercise["sets"]:
-                set_frame.destroy()
+            # def update_weight_var(event):
+            #     try:
+            #         weight_var.set(float(weightcb.get()))
+            #     except ValueError:
+            #         weight_var.set(0.0)
+    
+            # weightcb.bind("<<ComboboxSelected>>", update_weight_var)
+    
+            # delete_set_button = tkinter.Button(
+            #     set_frame,
+            #     text="Delete Set",
+            #     command=lambda: delete_set_row(GUI,excercise, set_frame)
+            # )
+            # delete_set_button.pack(side='left', padx=5)
+            # excercise["sets"].append({"frame": set_frame, "rep": rep_var, "weight": weight_var})
+            # break
 
-            # Remove the workout frame
-            excercise_frame.destroy()
+def delete_excercise_row(GUI, excercise_frame, excercise=None):
+    """Delete an excercise row and all its associated sets."""
 
-            # Remove from tracking list
-            GUI.excercises.remove(excercise)
-            break
+    #deletes the excercise from the workoutinstance
+    if excercise:
+        for set in excercise.sets:
+            set.frame.destroy()
+        GUI.currentWorkout.excercises.remove(excercise)
 
-def delete_set_row(GUI, excercise, set_frame):
+    #deleted the excercise frame
+    excercise_frame.destroy()
+
+
+
+    # for excercise in GUI.excercises:
+    #     if excercise["frame"] == excercise_frame:
+    #         # Remove all set frames
+    #         for set_frame in excercise["sets"]:
+    #             set_frame.destroy()
+
+    #         # Remove the workout frame
+    #         excercise_frame.destroy()
+
+    #         # Remove from tracking list
+    #         GUI.excercises.remove(excercise)
+    #         break
+
+def delete_set_row(GUI,set_frame, exercise, set= None):
     """Delete a specific set row."""
-    # Remove the set frame from the workout's tracking list
-    if set_frame in excercise["sets"]:
-        excercise["sets"].remove(set_frame)
-
-    # Destroy the set frame
+    #deletes the set row
     set_frame.destroy()
+
+    #deletes the set from the excercise instance
+    if set:
+        exercise.sets.remove(set)
+
+    # # Remove the set frame from the workout's tracking list
+    # if set_frame in excercise["sets"]:
+    #     excercise["sets"].remove(set_frame)
+
+    # # Destroy the set frame
+    # set_frame.destroy()
 
 def reset_log_tab(GUI):
         """Clear the Log Tab and reset it to its initial state."""
@@ -215,40 +314,48 @@ def reset_log_tab(GUI):
         for widget in GUI.dynamic_frame.winfo_children():
             widget.destroy()
 
-        # Clear the excercise tracker list
-        GUI.excercises.clear()
-    
-def save_data(GUI):
-    """Save the current workouts and sets to the data list and display them in the table."""
-    GUI.data = {}  # Clear previous data
-    exerciseList = []
-    for excercise in GUI.excercises:
-        excercise_name = excercise["name"].get()
-        newExercise = Excercise(excercise_name)
-        for set_data in excercise["sets"]:
-            rep = set_data["rep"].get()
-            weight = set_data["weight"].get()
-            set = Set(rep,weight)
-            newWorkout.addSet(set)
-        exerciseList.append(newWorkout)
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    GUI.data[timestamp] = exerciseList
+        # Creates a new instance of workout, ready to be used for a new workout log
+        GUI.currentWorkout = Workout(date=str(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
-    for time in GUI.data:
-        time_frame = tkinter.Frame(GUI.viewLogTab)
-        time_frame.pack(fill='x', padx=20, pady=2)
-        timeLabel = tkinter.Label(time_frame,text=f"{time}")
-        timeLabel.pack(side='left', padx=5)
-        exerciseList = GUI.data.get(time)
-        for exercise in exerciseList:
-            workout_frame = tkinter.Frame(GUI.viewLogTab)
-            workout_frame.pack(fill='x', padx=20, pady=2)
-            detail = exercise.get_summary()
-            detailLabel = tkinter.Label(time_frame,text=f"{detail}")
-            detailLabel.pack(side='left', padx=5)
+        #GUI.excercises.clear()
     
-    GUI.reset_log_tab()
-    GUI.my_notebook.select(3)
+def save_workout(GUI):
+    """Save the current workout and sets to the data list and display them in the table."""
+    if not GUI.currentProfile:
+        tkinter.messagebox.showerror("Error", "Please select a profile before saving")
+        return
+    
+    #saves the date of the workout
+    workoutDate = GUI.currentWorkout.date
+    #returns a summary of the whole workout 
+    workoutSummary = GUI.currentWorkout.getSummary()
+    #adds the workout summary to the workout log dictionary, with the date being the key
+    GUI.workoutLogs[workoutDate] = workoutSummary
+    #alerts the user that their workout has been saved and shows them the summary
+    tkinter.messagebox.showinfo("Success",f"The following workout for {workoutDate} has been saved!\n {workoutSummary}")
+    #calls the reset function 
+    reset_log_tab(GUI)
+    
+
+    
+
+    # GUI.data.clear()  # Clear previous data
+    # for excercise in GUI.excercises:
+    #     excercise_name = excercise["name"].get()
+    #     for set_data in excercise["sets"]:
+    #         rep = set_data["rep"].get()
+    #         weight = set_data["weight"].get()
+    #         GUI.data.append((excercise_name, rep, weight))
+
+    # # Update the table in the Table tab
+    # for row in GUI.tree.get_children():
+    #     GUI.tree.delete(row)
+    # for excercise_name, rep, weight in GUI.data:
+    #     GUI.tree.insert("", "end", values=(excercise_name, rep, weight))
+
+    
+    # GUI.reset_log_tab()
+    # GUI.my_notebook.select(3)
 
     
 
