@@ -6,6 +6,9 @@ from profile_1 import Profile
 from interface import GUI
 from workout import Workout
 from chatbot import find_most_similar_question
+from set import Set
+from excercise import Excercise
+from datetime import datetime
 
 def getBMI(GUI, name):
     '''calculates bmi based off user input height and weight
@@ -217,22 +220,37 @@ def reset_log_tab(GUI):
     
 def save_data(GUI):
     """Save the current workouts and sets to the data list and display them in the table."""
-    GUI.data.clear()  # Clear previous data
+    GUI.data = {}  # Clear previous data
+    exerciseList = []
     for excercise in GUI.excercises:
         excercise_name = excercise["name"].get()
+        newExercise = Excercise(excercise_name)
         for set_data in excercise["sets"]:
             rep = set_data["rep"].get()
             weight = set_data["weight"].get()
-            GUI.data.append((excercise_name, rep, weight))
+            set = Set(rep,weight)
+            newWorkout.addSet(set)
+        exerciseList.append(newWorkout)
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    GUI.data[timestamp] = exerciseList
 
-    # Update the table in the Table tab
-    for row in GUI.tree.get_children():
-        GUI.tree.delete(row)
-    for excercise_name, rep, weight in GUI.data:
-        GUI.tree.insert("", "end", values=(excercise_name, rep, weight))
+    for time in GUI.data:
+        time_frame = tkinter.Frame(GUI.viewLogTab)
+        time_frame.pack(fill='x', padx=20, pady=2)
+        timeLabel = tkinter.Label(time_frame,text=f"{time}")
+        timeLabel.pack(side='left', padx=5)
+        exerciseList = GUI.data.get(time)
+        for exercise in exerciseList:
+            workout_frame = tkinter.Frame(GUI.viewLogTab)
+            workout_frame.pack(fill='x', padx=20, pady=2)
+            detail = exercise.get_summary()
+            detailLabel = tkinter.Label(time_frame,text=f"{detail}")
+            detailLabel.pack(side='left', padx=5)
     
     GUI.reset_log_tab()
     GUI.my_notebook.select(3)
+
+    
 
 def handle_user_input(GUI, entry, text_widget):
     user_input = entry.get()
