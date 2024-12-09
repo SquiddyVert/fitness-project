@@ -205,9 +205,7 @@ class GUI:
         entry.pack(side=tkinter.LEFT, fill=tkinter.X, expand=True, padx=(0, 10))
         entry.focus()
 
-        send_button = ttk.Button(entry_frame, text="Send", command=lambda: self.handle_user_input(entry, text_widget))
+        send_button = ttk.Button(entry_frame, text="Send", command=lambda: func.handle_user_input(self,entry, text_widget))
         send_button.pack(side=tkinter.RIGHT)
 
-        homeButton = tkinter.Button(self.suggestionsTab, text="Home", command=lambda: func.my_notebook.select(0))
-        homeButton.pack(side=tkinter.BOTTOM, pady=5)
 
