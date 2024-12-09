@@ -7,6 +7,8 @@ from workout import Workout
 from excercise import Excercise
 from set import Set
 from chatbot import find_most_similar_question
+from set import Set
+from excercise import Excercise
 from datetime import datetime
 
 def getBMI(GUI, name):
@@ -336,6 +338,7 @@ def save_workout(GUI):
     
 
     
+
     # GUI.data.clear()  # Clear previous data
     # for excercise in GUI.excercises:
     #     excercise_name = excercise["name"].get()
@@ -349,9 +352,12 @@ def save_workout(GUI):
     #     GUI.tree.delete(row)
     # for excercise_name, rep, weight in GUI.data:
     #     GUI.tree.insert("", "end", values=(excercise_name, rep, weight))
+
     
     # GUI.reset_log_tab()
     # GUI.my_notebook.select(3)
+
+    
 
 def handle_user_input(GUI, entry, text_widget):
     user_input = entry.get()

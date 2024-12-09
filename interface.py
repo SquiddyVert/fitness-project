@@ -38,7 +38,7 @@ class GUI:
         self.viewLog_Tab()
         self.suggestions_Tab()
 
-        self.data = []
+        self.data = {}
 
     #creates the home tab of the application
     def home_Tab(self):
@@ -180,12 +180,6 @@ class GUI:
     def viewLog_Tab(self):
         self.viewLogTab = tkinter.Frame(self.my_notebook)
         self.my_notebook.add(self.viewLogTab, text= "View Logs")
-
-        self.tree = ttk.Treeview(self.viewLogTab, columns=("Excercise", "rep", "weight"), show="headings")
-        self.tree.heading("Excercise", text="Excercise")
-        self.tree.heading("rep", text="rep")
-        self.tree.heading("weight", text="weight")
-        self.tree.pack(fill="both", expand=True)
 
     #creates suggestions tab of application     
     def suggestions_Tab(self):
