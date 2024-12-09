@@ -4,7 +4,6 @@ import tkinter
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from workout import Workout
-from functions import excerciseNames
 from profile_1 import Profile
 from interface import GUI
 

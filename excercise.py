@@ -7,7 +7,7 @@ class Excercise:
         self.sets.append(excerciseSet)
 
     def get_summary(self):
-        summary = f"Exercise: {self.name}\n"
-        for excerciseSetNum, excerciseSetInfo in enumerate(self.sets, 1):
-            summary += f"  Set {excerciseSetNum}: {excerciseSetInfo.get_summary()}\n"
+        summary = f"{self.name}:\n"
+        for index, excerciseSet in enumerate(self.sets, 1):
+            summary += f"  Set {index}: {excerciseSet.get_summary()}\n"
         return summary

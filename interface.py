@@ -4,6 +4,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from workout import Workout
 import functions as func
+from datetime import datetime
 
 class GUI:
     def __init__(self, root):
@@ -24,7 +25,9 @@ class GUI:
         # Dictionary to store profiles based off name
         self.profiles = {}
         #dictionary to store all workouts
-        self.workouts = {}
+        self.workoutLogs = {}
+        #creates a new instance of workout
+        self.currentWorkout = Workout(date=str(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         #variable to keep track of what the current profile is
         self.currentProfile = ''
 
@@ -166,7 +169,7 @@ class GUI:
 
         self.dropdown_options = func.excerciseNames()
 
-        save_button = tkinter.Button(self.createLogTab, text="Save", command= lambda: func.save_data(self))
+        save_button = tkinter.Button(self.createLogTab, text="Save your workout", command= lambda: func.save_workout(self))
         save_button.pack(side='bottom', padx=5)
 
         self.row_counter = 0
