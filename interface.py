@@ -178,12 +178,6 @@ class GUI:
         self.viewLogTab = tkinter.Frame(self.my_notebook)
         self.my_notebook.add(self.viewLogTab, text= "View Logs")
 
-        self.tree = ttk.Treeview(self.viewLogTab, columns=("Excercise", "rep", "weight"), show="headings")
-        self.tree.heading("Excercise", text="Excercise")
-        self.tree.heading("rep", text="rep")
-        self.tree.heading("weight", text="weight")
-        self.tree.pack(fill="both", expand=True)
-
     #creates suggestions tab of application     
     def suggestions_Tab(self):
         self.suggestionsTab = tkinter.Frame(self.my_notebook)
