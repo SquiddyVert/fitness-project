@@ -184,6 +184,7 @@ def add_set_row(GUI, excercise_frame, excercise):
 
     # variable to track if something has been saved and to prevent multiple saves
     saved = {"status": False}
+    #okkkkkk
 
     #function to handle the set values because by default they are empty
     def get_set_values(repsEntry, weightEntry):
