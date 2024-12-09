@@ -180,6 +180,9 @@ def add_set_row(GUI, excercise_frame, excercise):
     )
     delete_set_button.pack(side='right', padx=5)
 
+    # variable to track if something has been saved and to prevent multiple saves
+    saved = {"status": False}
+
     #function to handle the set values because by default they are empty
     def get_set_values(repsEntry, weightEntry):
         """Retrieve the values from the entry widgets and validate them."""
@@ -205,18 +208,29 @@ def add_set_row(GUI, excercise_frame, excercise):
             return 0, 0.0
 
     def setinputComplete(event):
+        # checks if set has been saved already
+        if saved["status"]:  
+            return
+        
         # Get the set values from the entries
         reps, weight = get_set_values(repsEntry, weightEntry)
    
-
         # Create a new Set instance
         newSet = Set(reps=reps, weight=weight)
     
         # Add the new set to the exercise
         excercise.addSet(newSet)
-        delete_set_button.config(command=lambda: delete_excercise_row(GUI, excercise_frame, newSet))
 
-    repsEntry.bind("<FocusOut>", setinputComplete)
+        #updates variable to mark that the set has been saved
+        saved["status"] = True
+
+        #configure delete button to actually work as intended once there is data in the entry fields
+        delete_set_button.config(command=lambda: delete_excercise_row(GUI, excercise_frame, newSet))
+        
+        # Unbind the events to prevent further triggers
+    
+        weightEntry.unbind("<FocusOut>")
+
     weightEntry.bind("<FocusOut>", setinputComplete)
     
     # for excercise in GUI.excercises:
