@@ -1,3 +1,5 @@
+# Authors: Samuel Franco and Dekang Lu
+# Description: storing process of building the model and provide response
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import nltk
