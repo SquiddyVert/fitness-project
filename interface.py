@@ -59,7 +59,7 @@ class GUI:
         createLogButton.pack(pady=10)
         viewLogButton = tkinter.Button(self.home_tab, text="View your previous logs", command=lambda: self.my_notebook.select(3))
         viewLogButton.pack(pady=10)
-        suggestionButton = tkinter.Button(self.home_tab, text="Request an excercise suggestion", command=lambda: self.my_notebook.select(4))
+        suggestionButton = tkinter.Button(self.home_tab, text="Request an exercise suggestion", command=lambda: self.my_notebook.select(4))
         suggestionButton.pack(pady=10)
 
     #creates profile tab of application
@@ -162,15 +162,15 @@ class GUI:
         self.dynamic_frame = tkinter.Frame(self.createLogTab)
         self.dynamic_frame.pack(fill='x', padx=10, pady=10)
 
-        self.add_excercise_button = tkinter.Button(self.createLogTab, text="Add excercise", command=lambda: func.add_excercise_row(self))
-        self.add_excercise_button.pack(pady=10)
+        self.add_exercise_button = tkinter.Button(self.createLogTab, text="Add exercise", command=lambda: func.add_exercise_row(self))
+        self.add_exercise_button.pack(pady=10)
 
-        self.dropdown_options = func.excerciseNames()
+        self.dropdown_options = func.exerciseNames()
 
         save_button = tkinter.Button(self.createLogTab, text="Save your workout", command= lambda: func.save_workout(self))
         save_button.pack(side='bottom', padx=5)
 
-        self.excercises = []
+        self.exercises = []
 
     #creates view log tab of application
     def viewLog_Tab(self):
