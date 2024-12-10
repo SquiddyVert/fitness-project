@@ -1,6 +1,6 @@
 # Authors: Samuel Franco and Dekang Lu
 # Description: storing the exercise class
-class exercise:
+class Exercise:
     def __init__(self, name):
         self.name = name
         self.sets = []
