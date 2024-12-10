@@ -1,4 +1,5 @@
 # Authors: Samuel Franco and Dekang Lu
+# Description: User Profile class
 
 class Profile:
     def __init__(self, name,sex,age,height,weight):
