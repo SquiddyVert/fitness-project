@@ -1,3 +1,5 @@
+# Authors: Samuel Franco and Dekang Lu
+# Description: Workout class
 class Workout:
     def __init__(self, date):
         self.date = date
