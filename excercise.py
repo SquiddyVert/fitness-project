@@ -1,3 +1,5 @@
+# Authors: Samuel Franco and Dekang Lu
+# Description: storing the Excercise class
 class Excercise:
     def __init__(self, name):
         self.name = name
