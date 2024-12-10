@@ -3,13 +3,13 @@
 class Workout:
     def __init__(self, date):
         self.date = date
-        self.excercises = []
+        self.exercises = []
 
-    def addExcercise(self, excercise):
-        self.excercises.append(excercise)
+    def addExercise(self, exercise):
+        self.exercises.append(exercise)
 
     def getSummary(self):
         summary = f"Workout Date: {self.date}\n"
-        for exercise in self.excercises:
+        for exercise in self.exercises:
             summary += exercise.get_summary() + "\n"
         return summary
