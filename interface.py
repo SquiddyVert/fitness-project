@@ -1,5 +1,6 @@
+# Authors: Samuel Franco and Dekang Lu
+# Description: storing the GUI class for interface
 import tkinter
-#from tkinter import ttk
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from workout import Workout
@@ -8,6 +9,7 @@ from datetime import datetime
 
 class GUI:
     def __init__(self, root):
+        """initialization"""
         #initiates the GUI 
         self.root = root 
         self.root.title("Fitness Tracker")
@@ -38,10 +40,9 @@ class GUI:
         self.viewLog_Tab()
         self.suggestions_Tab()
 
-        self.data = {}
-
     #creates the home tab of the application
     def home_Tab(self):
+        """home tab initialization and adding elements"""
         self.home_tab = tkinter.Frame(self.my_notebook)
         self.my_notebook.add(self.home_tab, text= "Home")
 
@@ -63,6 +64,7 @@ class GUI:
 
     #creates profile tab of application
     def profile_Tab(self):
+        """profile tab initialization and adding elements"""
         #initiates the window and configures the layout
         self.profileTab = tkinter.Frame(self.my_notebook)
         self.my_notebook.add(self.profileTab, text= "Log Profile")
@@ -143,11 +145,6 @@ class GUI:
         setcurrentprofileButton = ttk.Button(currentprofileFrame, text="Set profile", command=lambda: func.setProfile(self))
         setcurrentprofileButton.grid(row=0, column=1) 
 
-        # self.currentProfileEntry = tkinter.Entry(self.profileTab,width=10)
-        # self.currentProfileEntry.grid(row=3, column =1)
-        # setcurrentprofileButton = ttk.Button(self.profileTab, text="Set profile", command= lambda:func.setProfile(self))
-        # setcurrentprofileButton.grid(row=3,column=2,)
-
         bmiOutputButton = tkinter.Button(
             self.profileTab, 
             text="Click here to see your BMI and BMI category based off your profile", 
@@ -157,6 +154,7 @@ class GUI:
 
     #creates create log tab of application
     def createLog_Tab(self):
+        """Exercise log tab initialization and adding elements"""
         self.createLogTab = tkinter.Frame(self.my_notebook)
         self.my_notebook.add(self.createLogTab, text= "Log Workouts")
         
@@ -172,24 +170,22 @@ class GUI:
         save_button = tkinter.Button(self.createLogTab, text="Save your workout", command= lambda: func.save_workout(self))
         save_button.pack(side='bottom', padx=5)
 
-        self.row_counter = 0
-        self.rows = []
         self.excercises = []
 
     #creates view log tab of application
     def viewLog_Tab(self):
+        """log display tab initialization"""
         self.viewLogTab = tkinter.Frame(self.my_notebook)
         self.my_notebook.add(self.viewLogTab, text= "View Logs")
 
     #creates suggestions tab of application     
     def suggestions_Tab(self):
+        """suggestion tab initialization and adding elements"""
         self.suggestionsTab = tkinter.Frame(self.my_notebook)
         self.my_notebook.add(self.suggestionsTab, text= "Request suggestions")
 
         suggestionLabel = tkinter.Label(self.suggestionsTab, text="Below you can ask questions relating to fitness and the fitness companion will answer them. ")
         suggestionLabel.pack()
-        
-
 
         text_widget = tkinter.Text(self.suggestionsTab, wrap=tkinter.WORD, height=20, width=50)
         text_widget.pack(padx=10, pady=10)
