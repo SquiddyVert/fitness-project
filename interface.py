@@ -200,5 +200,3 @@ class GUI:
 
         send_button = ttk.Button(entry_frame, text="Send", command=lambda: func.handle_user_input(self,entry, text_widget))
         send_button.pack(side=tkinter.RIGHT)
-
-
