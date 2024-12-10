@@ -1,3 +1,5 @@
+# Authors: Samuel Franco and Dekang Lu
+# Description: Set class
 class Set:
     def __init__(self, reps, weight):
         self.reps = reps
