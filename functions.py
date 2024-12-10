@@ -5,7 +5,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from profile_1 import Profile
 from workout import Workout
-from excercise import Excercise
+from exercise import Exercise
 from set import Set
 from chatbot import find_most_similar_question
 from datetime import datetime
@@ -102,18 +102,18 @@ def setProfile(GUI):
     else:
         tkinter.messagebox.showinfo("Error", "Profile not found! Check 'output profiles' to see what profiles are availableto choose from")
 
-def add_excercise_row(GUI):
-    '''Adding a row for a new excercise entry'''
+def add_exercise_row(GUI):
+    '''Adding a row for a new exercise entry'''
     # Create a frame for the row
-    excercise_frame = tkinter.Frame(GUI.dynamic_frame, bd=2, relief='groove')
-    excercise_frame.pack(fill='both', pady=5)
+    exercise_frame = tkinter.Frame(GUI.dynamic_frame, bd=2, relief='groove')
+    exercise_frame.pack(fill='both', pady=5)
 
-    nameLabel = tkinter.Label(excercise_frame,text="Excercise name")
+    nameLabel = tkinter.Label(exercise_frame,text="Exercise name")
     nameLabel.pack(side='left', padx=5)
 
     # Create a dropdown (Combobox)
     dropdown_var = tkinter.StringVar()
-    dropdown = ttk.Combobox(excercise_frame, textvariable=dropdown_var, width=20, state="normal")
+    dropdown = ttk.Combobox(exercise_frame, textvariable=dropdown_var, width=20, state="normal")
     dropdown.pack(side='left', padx=5)
     dropdown['values'] = GUI.dropdown_options 
 
@@ -134,39 +134,39 @@ def add_excercise_row(GUI):
     dropdown_var.trace_add("write", on_dropdown_type)
 
     def on_dropdown_select(event):
-        """Function to save the choice of excercise and add follow up buttons"""
+        """Function to save the choice of exercise and add follow up buttons"""
         selectedOption = dropdown_var.get()
         
         #creates an instance of exercise and saves it to the workout instance
-        newExcercise = Excercise(name=selectedOption)
-        GUI.currentWorkout.addExcercise(newExcercise)
+        newExercise = Exercise(name=selectedOption)
+        GUI.currentWorkout.addExercise(newExercise)
 
         # the buttons are updated to be able to perform their actions 
-        add_set_button.config(state="normal", command=lambda: add_set_row(GUI, excercise_frame, newExcercise))
-        delete_excercise_button.config(command=lambda: delete_excercise_row(GUI, excercise_frame, newExcercise))
+        add_set_button.config(state="normal", command=lambda: add_set_row(GUI, exercise_frame, newExercise))
+        delete_exercise_button.config(command=lambda: delete_exercise_row(GUI, exercise_frame, newExercise))
 
 
     # creates a bind on the dropdown
     dropdown.bind("<<ComboboxSelected>>",  on_dropdown_select)
 
-    #creates an add set button that allows user to add set to excercise
-    add_set_button = tkinter.Button(excercise_frame, text="Add Set", state= "disabled")
+    #creates an add set button that allows user to add set to exercise
+    add_set_button = tkinter.Button(exercise_frame, text="Add Set", state= "disabled")
     add_set_button.pack(side='left', padx=5)
 
-    #creates a delete button for the excercise
-    delete_excercise_button = tkinter.Button(
-        excercise_frame,
-        text="Delete Excercise",
-        command=lambda: delete_excercise_row(GUI, excercise_frame)
+    #creates a delete button for the exercise
+    delete_exercise_button = tkinter.Button(
+        exercise_frame,
+        text="Delete Exercise",
+        command=lambda: delete_exercise_row(GUI, exercise_frame)
     )
-    delete_excercise_button.pack(side='left', padx=5)
+    delete_exercise_button.pack(side='left', padx=5)
 
-def add_set_row(GUI, excercise_frame, excercise):
+def add_set_row(GUI, exercise_frame, exercise):
     """Add a new row for a new sets with reps and weights.
-    :excercise_frame: the frame that holds the individual exercise option
-    :excercise: specific exercise class object"""
+    :exercise_frame: the frame that holds the individual exercise option
+    :exercise: specific exercise class object"""
     #creates a new set frame for each set
-    set_frame = tkinter.Frame(excercise_frame)
+    set_frame = tkinter.Frame(exercise_frame)
     set_frame.pack(fill='x', padx=20, pady=2) 
 
     repsLabel = tkinter.Label(set_frame,text="Reps")
@@ -183,7 +183,7 @@ def add_set_row(GUI, excercise_frame, excercise):
     delete_set_button = tkinter.Button(
         set_frame,
         text="Delete Set",
-        command=lambda: delete_set_row(GUI,set_frame, excercise)
+        command=lambda: delete_set_row(GUI,set_frame, exercise)
     )
     delete_set_button.pack(side='right', padx=5)
 
@@ -231,13 +231,13 @@ def add_set_row(GUI, excercise_frame, excercise):
         newSet = Set(reps=reps, weight=weight)
     
         # Add the new set to the exercise
-        excercise.addSet(newSet)
+        exercise.addSet(newSet)
 
         #updates variable to mark that the set has been saved
         saved["status"] = True
 
         #configure delete button to actually work as intended once there is data in the entry fields
-        delete_set_button.config(command=lambda: delete_excercise_row(GUI, excercise_frame, newSet))
+        delete_set_button.config(command=lambda: delete_exercise_row(GUI, exercise_frame, newSet))
         
         # Unbind the events to prevent further triggers
     
@@ -245,29 +245,29 @@ def add_set_row(GUI, excercise_frame, excercise):
 
     weightEntry.bind("<FocusOut>", setinputComplete)
   
-def delete_excercise_row(GUI, excercise_frame, excercise=None):
-    """Delete an excercise row and all its associated sets.
-    :excercise_frame: the frame that holds the individual exercise option
-    :excercise: specific exercise class object, default as none if no input yet"""
+def delete_exercise_row(GUI, exercise_frame, exercise=None):
+    """Delete an exercise row and all its associated sets.
+    :exercise_frame: the frame that holds the individual exercise option
+    :exercise: specific exercise class object, default as none if no input yet"""
 
-    #deletes the excercise from the workoutinstance
-    if excercise:
-        for set in excercise.sets:
+    #deletes the exercise from the workoutinstance
+    if exercise:
+        for set in exercise.sets:
             set.frame.destroy()
-        GUI.currentWorkout.excercises.remove(excercise)
+        GUI.currentWorkout.exercises.remove(exercise)
 
-    #deleted the excercise frame
-    excercise_frame.destroy()
+    #deleted the exercise frame
+    exercise_frame.destroy()
 
 def delete_set_row(GUI,set_frame, exercise, set= None):
     """Delete an set row and all its associated sets.
     :set_frame: the frame that holds the individual set data
-    :excercise: specific exercise class object, 
+    :exercise: specific exercise class object, 
     :set: specific set instance, default as none if no input yet"""
     #deletes the set row
     set_frame.destroy()
 
-    #deletes the set from the excercise instance
+    #deletes the set from the exercise instance
     if set:
         exercise.sets.remove(set)
 
@@ -322,9 +322,9 @@ def handle_user_input(GUI, entry, text_widget):
     text_widget.insert(tkinter.END, f"Q&A support: {response}\n\n")
     text_widget.see(tkinter.END)
 
-def excerciseNames():
-    """function just for storing massive amount of excercise names
-    :return: list of excercise names"""
+def exerciseNames():
+    """function just for storing massive amount of exercise names
+    :return: list of exercise names"""
     return ['Neck Flexion', 'Lateral Neck Flexion', 'Wall Front Neck Bridge',
        'Wall Side Neck Bridge', 'Neck Extension', 'Seated Neck Extension',
        'Seated Neck Extension:  Harness', 'Neck Retraction',
