@@ -1,3 +1,5 @@
+# Authors: Samuel Franco and Dekang Lu
+# Description: reading the dataset for providing suggestions and processing it
 import pandas as pd
 
 df = pd.read_parquet("hf://datasets/onurSakar/GYM-Exercise/data/train-00000-of-00001.parquet")
