@@ -1,16 +1,8 @@
-#authors: Samuel Franco & Dekang Lu
-import tkinter
-#from tkinter import ttk
+# Authors: Samuel Franco and Dekang Lu
+# Description: main execute
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
-from workout import Workout
-from profile_1 import Profile
 from interface import GUI
-
-def main():
-    print("hello")
-
-
 
 if __name__ == "__main__":
     root = ttk.Window(themename="solar")
