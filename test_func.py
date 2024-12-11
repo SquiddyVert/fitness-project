@@ -1,5 +1,6 @@
 # Authors: Samuel Franco and Dekang Lu
 # Description: testing functions
+from chatbot import find_most_similar_question
 import functions as func
 import pytest
 from exercise import Exercise
