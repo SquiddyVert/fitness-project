@@ -18,3 +18,13 @@ def test_exercise():
     newEx = Exercise("pull up")
     newEx.addSet(newSet)
     assert len(newEx.sets) > 0
+
+def test_workout():
+    newWorkout = Workout()
+    newEx = Exercise("pull up")
+    newWorkout.addExercise(newEx)
+    assert len(newWorkout.exercises) > 0
+
+def test_find_most_similar_question():
+    response = find_most_similar_question("dead lift")
+    assert isinstance(response, str)
